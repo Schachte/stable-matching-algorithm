@@ -22,79 +22,89 @@ Stable: No element A of the first set that prefers an element B of the second se
 '''
 # The women that the men prefer
 preferred_rankings_men = {
-    'ryan': ( 'lizzy' , 'sarah' , 'zoey' , 'daniella' ] ,
-    'josh': ( 'sarah' , 'lizzy' , 'daniella' , 'zoey' ] ,
-    'blake': ( 'sarah' , 'daniella' , 'zoey' , 'lizzy' ] ,
-    'connor': ( 'lizzy' , 'sarah' , 'zoey' , 'daniella' ]
+    "ryan": ("lizzy", "sarah", "zoey", "daniella"),
+    "josh": ("sarah", "lizzy", "daniella", "zoey"),
+    "blake": ("sarah", "daniella", "zoey", "lizzy"),
+    "connor": ("lizzy", "sarah", "zoey", "daniella"),
 }
 
 # The men that the women prefer
 preferred_rankings_women = {
-    'lizzy': [ 'ryan' , 'blake' , 'josh' , 'connor' ] ,
-    'sarah': [ 'ryan' , 'blake' , 'connor' , 'josh' ] ,
-    'zoey': [ 'connor' , 'josh' , 'ryan' , 'blake' ] ,
-    'daniella': [ 'ryan' , 'josh' , 'connor' , 'blake' ]
+    "lizzy": ("ryan", "blake", "josh", "connor"),
+    "sarah": ("ryan", "blake", "connor", "josh"),
+    "zoey": ("connor", "josh", "ryan", "blake"),
+    "daniella": ("ryan", "josh", "connor", "blake"),
 }
 
 # Keep track of the people that "may" end up together
-tentative_engagements = [ ]
+tentative_engagements = []
 
 # Men who still need to propose and get accepted successfully
-free_men = [ ]
+free_men = []
 
 
 def init_free_men():
-    '''Initialize the arrays of women and men to represent
-        that they're all initially free and not engaged'''
-    for man in preferred_rankings_men.iterkeys():
-        free_men.append(man)
+    """Initialize the arrays of women and men to represent
+        that they're all initially free and not engaged"""
+    for man in preferred_rankings_men.items():
+        free_men.append(man[0])
+
+
+def stable_matching():
+    # Matching algorithm until stable match terminates
+    while len(free_men) > 0:
+        for man in free_men:
+            print(man)
+            begin_matching(man)
 
 
 def begin_matching(man):
-    '''Find the first free woman available to a man at
-        any given time'''
+    # Find the first free woman available to a man at any given time
 
-    print("DEALING WITH %s" % (man))
-    for woman in preferred_rankings_men[ man ]:
+    print(f"DEALING WITH {man}")
+    for woman in preferred_rankings_men[man]:
 
         # Boolean for whether woman is taken or not
-        taken_match = [ couple for couple in tentative_engagements if woman in couple ]
+        taken_match = [couple for couple in tentative_engagements if woman in couple]
 
-        if (len(taken_match) == 0):
+        if len(taken_match) == 0:
             # tentatively engage the man and woman
-            tentative_engagements.append([ man , woman ])
+            tentative_engagements.append([man, woman])
             free_men.remove(man)
-            print('%s is no longer a free man and is now tentatively engaged to %s' % (man , woman))
+            print(
+                f"{man} is no longer a free man and is now tentatively engaged to {woman}"
+            )
             break
 
-        elif (len(taken_match) > 0):
-            print('%s is taken already..' % (woman))
+        elif len(taken_match) > 0:
+            print(f"{woman} is taken already..")
 
             # Check ranking of the current dude and the ranking of the 'to-be' dude
-            current_guy = preferred_rankings_women[ woman ].index(taken_match[ 0 ][ 0 ])
-            potential_guy = preferred_rankings_women[ woman ].index(man)
+            current_guy = preferred_rankings_women[woman].index(taken_match[0][0])
+            potential_guy = preferred_rankings_women[woman].index(man)
 
-            if (current_guy < potential_guy):
-                print('She\'s satisfied with %s..' % (taken_match[ 0 ][ 0 ]))
+            if current_guy < potential_guy:
+                print(f"She satisfied with {taken_match[0][0]}..")
             else:
-                print('%s is better than %s' % (man , taken_match[ 0 ][ 0 ]))
-                print('Making %s free again.. and tentatively engaging %s and %s' % (
-                taken_match[ 0 ][ 0 ] , man , woman))
+                print(f"{man} is better than {taken_match[0][0]}")
+                print(
+                    f"Making {taken_match[0][0]} free again.. and tentatively engaging {man} and {woman}"
+                )
 
                 # The new guy is engaged
                 free_men.remove(man)
 
                 # The old guy is now single
-                free_men.append(taken_match[ 0 ][ 0 ])
+                free_men.append(taken_match[0][0])
 
                 # Update the fiance of the woman (tentatively)
-                taken_match[ 0 ][ 0 ] = man
+                taken_match[0][0] = man
                 break
 
 
 def stable_matching():
-    '''Matching algorithm until stable match terminates'''
-    while (len(free_men) > 0):
+    # Matching algorithm until stable match terminates
+    while len(free_men) > 0:
         for man in free_men:
             begin_matching(man)
 
